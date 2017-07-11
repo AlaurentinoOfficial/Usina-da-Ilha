@@ -1,12 +1,13 @@
 #define temp 2
 #define co2 3
 
-#define fire 5
-#define fire_led 6
-#define fire_time 30000
+#define vela 5
+#define queima_led 6
+#define duracao_queima 30000
 
 void setup() {
-  pinMode();
+  pinMode(vela, OUTPUT);
+  pinMode(queima_led, OUTPUT);
 }
 
 void loop() {
@@ -21,10 +22,12 @@ void loop() {
   Serial.print(co2);
   Serial.println("%");
 
-  pulseTime(fire, 300);
-  delay(fire_delay);
+  pulseTime(queima, 300);
+  digitalWrite(queima_led, HIGH);
+  delay(duracao_queima);
+  digitalWrite(queima_led, LOW);
 
-  // Apagar
+  // Apagar()
 }
 
 void pulseTime(int port, int mili) {
