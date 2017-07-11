@@ -1,20 +1,20 @@
-#define temp 2
-#define co2 3
+#define tempPin 2
+#define co2Pin A0
 
-#define vela 5
-#define queima_led 6
-#define duracao_queima 30000
+#define velaPin 5
+#define queimaLedPin 6
+#define duracaoQueima 30000
 
 void setup() {
-  pinMode(vela, OUTPUT);
-  pinMode(queima_led, OUTPUT);
+  pinMode(velaPin, OUTPUT);
+  pinMode(queimaLedPin, OUTPUT);
 }
 
 void loop() {
   float temp = (5.0 * analogRead(tempPin) * 100.0) / 1024;
-  float co2 = map(analogRead(tempPin), 0, 1023, 0, 100);
+  float co2 = map(analogRead(co2Pin), 0, 1023, 0, 100);
 
-  Serial.print("Temperatura: ")
+  Serial.print("Temperatura: ");
   Serial.print(temp);
   Serial.println(" °C");
 
@@ -22,10 +22,10 @@ void loop() {
   Serial.print(co2);
   Serial.println("%");
 
-  pulseTime(queima, 300);
-  digitalWrite(queima_led, HIGH);
-  delay(duracao_queima);
-  digitalWrite(queima_led, LOW);
+  pulseTime(velaPin, 300);
+  digitalWrite(queimaLedPin, HIGH);
+  delay(duracaoQueima);
+  digitalWrite(queimaLedPin, LOW);
 
   // Apagar()
 }
