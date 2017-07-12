@@ -1,13 +1,14 @@
-#define tempPin 2
+#define tempPin 4
 #define co2Pin A0
 
 #define velaPin 5
 #define queimaLedPin 6
-#define duracaoQueima 30000
+#define duracaoQueima 1000
 
 void setup() {
   pinMode(velaPin, OUTPUT);
   pinMode(queimaLedPin, OUTPUT);
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -16,11 +17,11 @@ void loop() {
 
   Serial.print("Temperatura: ");
   Serial.print(temp);
-  Serial.println(" °C");
+  Serial.println(" °C\n");
 
   Serial.print("Nivel de CO2: ");
   Serial.print(co2);
-  Serial.println("%");
+  Serial.println("%\n");
 
   pulseTime(velaPin, 300);
   digitalWrite(queimaLedPin, HIGH);
