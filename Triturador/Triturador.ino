@@ -1,45 +1,88 @@
-// PINS
-#define ultra 2
-#define ultra_trig 3
-#define temp 4
-#define co2Sensor A0
-#define engine 5
-#define eng_led 8
+#define ultraPin 2
+#define ultraTrigPin 3
 
-// TIMERS
-#define ENGINE 1000
-#define MAN_WAIT 1000
-#define FIRE 1000
+#define inicioBtn 4
+
+#define motor 5
+#define motorLedPin 6
+
+bool estaTriturando;
+long inicioProcesso;
+#define tempoTrituracao 30000
 
 void setup() {
-  pinMode(ultra, OUTPUT);
-  pinMode(engine, OUTPUT);
-  pinMode(ultra_trig, OUTPUT);
-  pinMode(ultra, INPUT);
-  pinMode(eng_led, OUTPUT);
   Serial.begin(9600);
+  Serial.println("> Iniciando Maquina Trituradora ...");
+  
+  pinMode(ultraPin, OUTPUT);
+  pinMode(ultraTrigPin, OUTPUT);
+  pinMode(motor, OUTPUT);
+  pinMode(motorLedPin, OUTPUT);
+
+  estaTriturando = false;
+
+  delay(1000);
+  Serial.println("> Maquina iniciada!");
 }
 
-void loop() {
-  digitalWrite(ultra_trig, LOW);
+float Ultrassonico() {
+  digitalWrite(ultraTrigPin, LOW);
   delayMicroseconds(2);
-  digitalWrite(ultra_trig, HIGH);
+  digitalWrite(ultraTrigPin, HIGH);
   delayMicroseconds(10);
-  digitalWrite(ultra_trig, LOW);
+  digitalWrite(ultraTrigPin, LOW);
   
-  long s = (pulseIn(ultra, HIGH)/2) / 29.1; // CM
-  Serial.print(s);
-  Serial.println(" cm");
-  
-  if(s < 10) {
-    digitalWrite(eng_led, HIGH);
-    pulseTime(engine, ENGINE);
-    digitalWrite(func_led, LOW);
+  float ultra = (pulseIn(ultraPin, HIGH)/2) / 29.1; // CM
+  Serial.println("\n> Volume: " + String(ultra) + " cm");
+
+  return ultra;
+}
+
+void IniciarProcesso() {
+  Serial.println("\n\n-----------------------\n");
+  Serial.println("> Iniciando trituração!");
+
+  // Liga o led
+  digitalWrite(motorLedPin, HIGH);
+
+  // Liga o motor
+  digitalWrite(motor, HIGH);
+  delay(500);
+  Serial.println("> Motor ligado!");
+
+  estaTriturando = true;
+  inicioProcesso = millis();
+  Serial.println("\n> ATECAO, TRITURADOR ESTA LIGADO!");
+  Serial.println("\n-----------------------\n");
+}
+
+void ProcessoMotor() {
+  if(millis() - inicioProcesso >= tempoTrituracao) {
+    Serial.println("\n> FINALIZANDO TRITURACAO!");
+    // Reinicia o processo
+    inicioProcesso = 0;
+    estaTriturando = false;
+
+    // Desliga o motor
+    digitalWrite(motor, LOW);
+
+    // Desliga o led
+    digitalWrite(motorLedPin, LOW);
   }
 }
 
-void pulseTime(int port, long timeout) {
-  digitalWrite(port, HIGH);
-  delay(timeout);
-  digitalWrite(port, LOW);
+void loop() {
+  // Agurda o botão para inciar o processo
+  if(digitalRead(inicioBtn) == HIGH && Ultrassonico() < 10 && estaTriturando)
+    IniciarProcesso();
+
+  // Verifica se esta triturando
+  else if (estaTriturando)
+    ProcessoMotor();
+
+  else {
+    digitalWrite(motorLedPin, HIGH);
+    delay(700);
+    digitalWrite(motorLedPin, LOW);
+  }
 }
